@@ -1,0 +1,56 @@
+name: Generate IDs
+
+outputs:
+  trace-id:
+    description: The Trace ID
+    value: ${{ steps.trace-id.outputs.TRACE_ID }}
+  parent-span-id:
+    description: The Parent Span ID
+    value: ${{ steps.parent-span-id.outputs.PARENT_SPAN_ID }}
+  span-id:
+    description: The Span ID
+    value: ${{ steps.span-id.outputs.SPAN_ID }}
+  traceparent:
+    description: The Trace Parent
+    value: ${{ steps.traceparent.outputs.TRACEPARENT }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate Trace ID
+      id: trace-id
+      run: |
+        generate_trace_id() {
+          echo -n "${1}${2}t" | openssl dgst -sha256 | sed 's/^.* //'
+        }
+        echo "TRACE_ID=$(generate_trace_id ${GITHUB_RUN_ID} ${GITHUB_RUN_ATTEMPT})" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Generate Parent Span ID
+      id: parent-span-id
+      run: |
+        generate_parent_span_id() {
+          echo -n "${1}${2}s" | openssl dgst -sha256 | sed 's/^.* //'
+        }
+        echo "PARENT_SPAN_ID=$(generate_parent_span_id ${GITHUB_JOB} ${GITHUB_RUN_ATTEMPT})" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Generate Span ID
+      id: span-id
+      run: |
+        generate_span_id() {
+          input="${1}${2}${3}${4}"
+          echo -n "$input" | openssl dgst -sha256 | sed 's/^.* //'
+        }
+        echo "SPAN_ID=$(generate_span_id ${GITHUB_JOB} ${GITHUB_RUN_ATTEMPT} ${GITHUB_SHA})" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Generate Trace Parent
+      id: traceparent
+      run: |
+        generate_trace_parent() {
+          input="00-${1}-${2}-01"
+          echo -n "$input"
+        }
+        echo "TRACEPARENT=$(generate_span_id ${{ steps.trace-id.outputs.TRACE_ID }} ${{ steps.parent-span-id.outputs.PARENT_SPAN_ID }} )" >> $GITHUB_OUTPUT
+      shell: bash

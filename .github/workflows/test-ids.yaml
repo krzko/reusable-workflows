@@ -1,0 +1,24 @@
+name: Test IDs
+
+on:
+  push:
+    # branches:
+    #   - main
+
+jobs:
+  get-ids:
+    runs-on:
+      - ubuntu-latest
+    outputs:
+      context-json: ${{ steps.x-context.outputs.context-json }}
+    steps:
+      - name: Get Trace ID
+        id: trace-id
+        uses: ../../actions/generate-ids/
+      - name: Get Parent Span ID
+        id: parent-span-id
+        uses: ../../actions/generate-ids/
+      - name: Echo IDs
+        run: |
+          echo "Trace ID: ${{ steps.trace-id.outputs.trace-id }}"
+          echo "Parent Span ID: ${{ steps.parent-span-id.outputs.parent-span-id }}"
