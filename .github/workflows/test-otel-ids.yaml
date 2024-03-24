@@ -33,3 +33,11 @@ jobs:
             echo "🧵 TRACEPARENT ID: $TRACEPARENT"
             echo "Job: $GITHUB_JOB"
             echo "Run Attempt: $GITHUB_RUN_ATTEMPT"
+
+      - name: Docker Run
+        env:
+          TRACEPARENT: ${{ steps.get-ids.outputs.traceparent }}
+        run: |
+            docker run \
+              --rm \
+              ghcr.io/equinix-labs/otel-cli:latest status
