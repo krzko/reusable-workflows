@@ -14,10 +14,10 @@ jobs:
     steps:
       - name: Get Trace ID
         id: trace-id
-        uses: ../../actions/generate-ids/
+        uses: ./.github/actions/generate-ids
       - name: Get Parent Span ID
         id: parent-span-id
-        uses: ../../actions/generate-ids/
+        uses: ./.github/actions/generate-id
       - name: Echo IDs
         run: |
           echo "Trace ID: ${{ steps.trace-id.outputs.trace-id }}"
