@@ -22,3 +22,4 @@ jobs:
         run: |
           echo "Trace ID: ${{ steps.get-ids.outputs.trace-id }}"
           echo "Parent Span ID: ${{ steps.get-ids.outputs.parent-span-id }}"
+          echo "TRACEPARENT ID: ${{ steps.get-ids.outputs.traceparent }}"
