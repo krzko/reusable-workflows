@@ -52,5 +52,5 @@ runs:
           input="00-${1}-${2}-01"
           echo -n "$input"
         }
-        echo "TRACEPARENT=$(generate_span_id ${{ steps.trace-id.outputs.TRACE_ID }} ${{ steps.parent-span-id.outputs.PARENT_SPAN_ID }} )" >> $GITHUB_OUTPUT
+        echo "TRACEPARENT=$(generate_trace_parent ${{ steps.trace-id.outputs.TRACE_ID }} ${{ steps.parent-span-id.outputs.PARENT_SPAN_ID }} )" >> $GITHUB_OUTPUT
       shell: bash

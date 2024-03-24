@@ -12,13 +12,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get Trace ID
-        id: trace-id
+      - name: Get IDs
+        id: get-ids
         uses: ./.github/actions/generate-ids
-      - name: Get Parent Span ID
-        id: parent-span-id
-        uses: ./.github/actions/generate-id
+      # - name: Get Parent Span ID
+      #   id: parent-span-id
+      #   uses: ./.github/actions/generate-id
       - name: Echo IDs
         run: |
-          echo "Trace ID: ${{ steps.trace-id.outputs.trace-id }}"
-          echo "Parent Span ID: ${{ steps.parent-span-id.outputs.parent-span-id }}"
+          echo "Trace ID: ${{ steps.get-ids.outputs.trace-id }}"
+          echo "Parent Span ID: ${{ steps.get-ids.outputs.parent-span-id }}"
