@@ -12,6 +12,8 @@ jobs:
     outputs:
       context-json: ${{ steps.x-context.outputs.context-json }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Get Trace ID
         id: trace-id
         uses: ./.github/actions/generate-ids
