@@ -40,4 +40,5 @@ jobs:
         run: |
             docker run \
               --rm \
+              --env TRACEPARENT=$TRACEPARENT \
               ghcr.io/equinix-labs/otel-cli:latest status
