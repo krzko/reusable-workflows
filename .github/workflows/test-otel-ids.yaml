@@ -1,0 +1,23 @@
+name: Test IDs
+
+on:
+  push:
+    # branches:
+    #   - main
+
+jobs:
+  get-ids:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get IDs
+        id: get-ids
+        uses: krzko/reusable-workflows/actions/generate-otel-ids@main
+
+      - name: Echo IDs
+        run: |
+          echo "🕸️ Trace ID: ${{ steps.get-ids.outputs.otel-trace-id }}"
+          echo "🌐 Parent Span ID: ${{ steps.get-ids.outputs.otel-parent-span-id }}"
+          echo "🧵 TRACEPARENT ID: ${{ steps.get-ids.outputs.traceparent }}"

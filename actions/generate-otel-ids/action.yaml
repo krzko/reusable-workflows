@@ -1,0 +1,56 @@
+name: 🆔 Generate OpenTelemetry IDs
+
+outputs:
+  otel-trace-id:
+    description: The OpenTelemetry Trace ID
+    value: ${{ steps.trace-id.outputs.OTEL_TRACE_ID }}
+  otel-parent-span-id:
+    description: The OpenTelemetry Parent Span ID
+    value: ${{ steps.parent-span-id.outputs.OTEL_PARENT_SPAN_ID }}
+  otel-span-id:
+    description: The OpenTelemetry Span ID
+    value: ${{ steps.span-id.outputs.OTEL_SPAN_ID }}
+  traceparent:
+    description: The Trace Parent (W3C Trace Context)
+    value: ${{ steps.traceparent.outputs.TRACEPARENT }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Generate OpenTelemetry Trace ID 🔍
+      id: trace-id
+      run: |
+        generate_trace_id() {
+          echo -n "${1}${2}t" | openssl dgst -sha256 | sed 's/^.* //' | cut -c1-32
+        }
+        echo "OTEL_TRACE_ID=$(generate_trace_id ${GITHUB_RUN_ID} ${GITHUB_RUN_ATTEMPT})" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: 🕸️ Generate OpenTelemetry Parent Span ID
+      id: parent-span-id
+      run: |
+        generate_parent_span_id() {
+          echo -n "${1}${2}s" | openssl dgst -sha256 | sed 's/^.* //'  | cut -c1-16
+        }
+        echo "OTEL_PARENT_SPAN_ID=$(generate_parent_span_id ${GITHUB_JOB} ${GITHUB_RUN_ATTEMPT})" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: 🌐 Generate OpenTelemetry Span ID
+      id: span-id
+      run: |
+        generate_span_id() {
+          input="${1}${2}${3}${4}"
+          echo -n "$input" | openssl dgst -sha256 | sed 's/^.* //'  | cut -c1-16
+        }
+        echo "OTEL_SPAN_ID=$(generate_span_id ${GITHUB_JOB} ${GITHUB_RUN_ATTEMPT} ${GITHUB_SHA})" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: 🧵 Generate Trace Parent
+      id: traceparent
+      run: |
+        generate_trace_parent() {
+          input="00-${1}-${2}-01"
+          echo -n "$input"
+        }
+        echo "TRACEPARENT=$(generate_trace_parent ${{ steps.trace-id.outputs.OTEL_TRACE_ID }} ${{ steps.parent-span-id.outputs.OTEL_PARENT_SPAN_ID }})" >> $GITHUB_OUTPUT
+      shell: bash
