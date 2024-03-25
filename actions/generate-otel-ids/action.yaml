@@ -30,7 +30,7 @@ runs:
       id: parent-span-id
       run: |
         generate_parent_span_id() {
-          echo -n "${1}${2}${3}" | openssl dgst -sha256 | sed 's/^.* //'  | cut -c16-32
+          echo -n "${1}${2}${3}" | openssl dgst -sha256 | sed 's/^.* //'  | cut -c17-32
         }
         echo "OTEL_PARENT_SPAN_ID=$(generate_parent_span_id ${GITHUB_RUN_ID} ${GITHUB_RUN_ATTEMPT} ${GITHUB_JOB})" >> $GITHUB_OUTPUT
       shell: bash
