@@ -1,4 +1,4 @@
-name: Test IDs
+name: Test OpenTelemetry IDs
 
 on:
   push:
@@ -6,27 +6,27 @@ on:
     #   - main
 
 jobs:
-  get-ids:
+  get-otel-ids:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get IDs
-        id: get-ids
+      - name: Get OTel IDs
+        id: get-otel-ids
         uses: krzko/reusable-workflows/actions/generate-otel-ids@main
 
       - name: Echo IDs
         run: |
-          echo "🕸️ Trace ID: ${{ steps.get-ids.outputs.otel-trace-id }}"
-          echo "🌐 Parent Span ID: ${{ steps.get-ids.outputs.otel-parent-span-id }}"
-          echo "🧵 TRACEPARENT ID: ${{ steps.get-ids.outputs.traceparent }}"
+          echo "🕸️ Trace ID: ${{ steps.get-otel-ids.outputs.otel-trace-id }}"
+          echo "🌐 Parent Span ID: ${{ steps.get-otel-ids.outputs.otel-parent-span-id }}"
+          echo "🧵 TRACEPARENT ID: ${{ steps.get-otel-ids.outputs.traceparent }}"
 
       - name: Echo IDs from ENVs
         env:
-          OTEL_TRACE_ID: ${{ steps.get-ids.outputs.otel-trace-id }}
-          OTEL_PARENT_SPAN_ID: ${{ steps.get-ids.outputs.otel-parent-span-id }}
-          TRACEPARENT: ${{ steps.get-ids.outputs.traceparent }}
+          OTEL_TRACE_ID: ${{ steps.get-otel-ids.outputs.otel-trace-id }}
+          OTEL_PARENT_SPAN_ID: ${{ steps.get-otel-ids.outputs.otel-parent-span-id }}
+          TRACEPARENT: ${{ steps.get-otel-ids.outputs.traceparent }}
         run: |
             echo "🕸️ Trace ID: $OTEL_TRACE_ID"
             echo "🌐 Parent Span ID: $OTEL_PARENT_SPAN_ID"
@@ -36,7 +36,26 @@ jobs:
 
       - name: Docker Run
         env:
-          TRACEPARENT: ${{ steps.get-ids.outputs.traceparent }}
+          TRACEPARENT: ${{ steps.get-otel-ids.outputs.traceparent }}
+        run: |
+            docker run \
+              --rm \
+              --env TRACEPARENT=$TRACEPARENT \
+              ghcr.io/equinix-labs/otel-cli:latest status
+
+  minimal-get-otel-ids:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get OTel IDs
+        id: get-otel-ids
+        uses: krzko/reusable-workflows/actions/generate-otel-ids@main
+
+      - name: Docker Run
+        env:
+          TRACEPARENT: ${{ steps.get-otel-ids.outputs.traceparent }}
         run: |
             docker run \
               --rm \
