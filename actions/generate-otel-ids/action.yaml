@@ -32,7 +32,7 @@ runs:
         generate_parent_span_id() {
           echo -n "${1}${2}${3}" | openssl dgst -sha256 | sed 's/^.* //'  | cut -c1-16
         }
-        echo "OTEL_PARENT_SPAN_ID=$(generate_parent_span_id ${GITHUB_RUN_ID} ${GITHUB_RUN_ATTEMPT} ${JOB_NAME})" >> $GITHUB_OUTPUT
+        echo "OTEL_PARENT_SPAN_ID=$(generate_parent_span_id ${GITHUB_RUN_ID} ${GITHUB_RUN_ATTEMPT} ${GITHUB_JOB})" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: 🌐 Generate OpenTelemetry Span ID
