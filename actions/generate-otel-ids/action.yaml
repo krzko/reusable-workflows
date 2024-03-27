@@ -38,7 +38,9 @@ runs:
       run: |
         jobs=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id}}/attempts/${{ github.run_attempt }}/jobs)
         job_id=$(echo $jobs | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .id')
+        job_name=$(echo $jobs | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .name')
         echo "job_id=$job_id" >> $GITHUB_OUTPUT
+        echo "job_name=$job_name" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: 🕸️ Generate OpenTelemetry Parent Span ID
@@ -47,7 +49,7 @@ runs:
         generate_parent_span_id() {
           echo -n "${1}${2}${3}" | openssl dgst -sha256 | sed 's/^.* //'  | cut -c17-32
         }
-        echo "OTEL_PARENT_SPAN_ID=$(generate_parent_span_id ${GITHUB_RUN_ID} ${GITHUB_RUN_ATTEMPT} ${{ steps.get-job-id.outputs.job_id }})" >> $GITHUB_OUTPUT
+        echo "OTEL_PARENT_SPAN_ID=$(generate_parent_span_id ${GITHUB_RUN_ID} ${GITHUB_RUN_ATTEMPT} ${{ steps.get-job-id.outputs.job_name }})" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: 🌐 Generate OpenTelemetry Span ID
