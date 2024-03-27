@@ -1,5 +1,10 @@
 name: 🆔 Generate OpenTelemetry IDs
 
+inputs:
+  token:
+    description: 'A Github Token'
+    required: true
+
 outputs:
   otel-trace-id:
     description: The OpenTelemetry Trace ID
@@ -29,11 +34,12 @@ runs:
     - name: Get Job ID from GH API
       id: get-job-id
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.token }}
       run: |
         jobs=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id}}/attempts/${{ github.run_attempt }}/jobs)
         job_id=$(echo $jobs | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .id')
         echo "job_id=$job_id" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: 🕸️ Generate OpenTelemetry Parent Span ID
       id: parent-span-id
