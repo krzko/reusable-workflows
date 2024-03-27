@@ -36,12 +36,13 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.token }}
       run: |
-        jobs=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id}}/attempts/${{ github.run_attempt }}/jobs)
-        job_id=$(echo $jobs | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .id')
-        job_name=$(echo $jobs | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .name')
+        jobs=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
+        job_id=$(echo "$jobs" | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .id')
+        job_name=$(echo "$jobs" | jq -r '.jobs[] | select(.runner_name=="${{ runner.name }}") | .name')
         echo "job_id=$job_id" >> $GITHUB_OUTPUT
-        echo "job_name=$job_name" >> $GITHUB_OUTPUT
+        printf "job_name=%q\n" "$job_name" >> $GITHUB_OUTPUT
       shell: bash
+
 
     - name: 🕸️ Generate OpenTelemetry Parent Span ID
       id: parent-span-id
